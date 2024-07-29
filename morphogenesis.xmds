@@ -1,0 +1,249 @@
+<simulation xmds-version="2">
+  <name>H_t1_nflat</name>
+
+  <author>Leonardo Silva-Dias</author>
+  <description>
+    Script created for solving the Cahn-Hilliard equation in 2D.
+  </description>
+
+  <features>
+      <benchmark />
+      <fftw plan="patient" />
+      <openmp />
+      <auto_vectorise />
+      <globals>
+          <![CDATA[
+          real a1 = 6.66;
+          real b1 = 6.66;
+          real k = 0.1333;
+          real uin = 1.90;
+          real uout = 0.00;
+          real a = 2.00;
+          real b = 8.00;
+          real c1 = 0.10;
+          real d1 = 0.10;
+          real c2 = 2.00;
+          real d2 = 5.00;
+          real Du = 0.001;
+          real DA = 0.001;
+          real DB = 0.00;  
+          real DwA = 0.01;
+          real DwB = 0.055;
+          real x1 = 1.72;
+          real x2 = 5.16;
+          real x3 = 8.60;
+          real x4 = 12.04;
+          real x5 = 15.48;
+          real x6 = 18.92;
+          real x7 = 22.36;
+          real x8 = 25.80;
+          real x9 = 29.24;
+          real x10 = 32.68;
+          real q1 = 1.72;
+          real r  = 0.86;
+          complex kk;  
+          real kk1 = 0.07;          
+        ]]>
+       </globals>
+     </features>
+
+  <noise_vector name="noise1" dimensions="x y" kind="gaussian" type="real">
+    <components> n1 </components>
+  </noise_vector>
+
+  <geometry>
+      <propagation_dimension> t </propagation_dimension>
+      <transverse_dimensions>
+      <dimension name="x" lattice="688"  domain="(0, 34.40)"/>
+       <dimension name="y" lattice="69"  domain="(0, 3.44)"/>
+    </transverse_dimensions>
+   </geometry>
+
+
+  <vector name="fase" initial_basis="x y" type="complex">
+    <components> u </components>
+    <initialisation>
+    <dependencies> noise1 </dependencies>
+      <![CDATA[
+         u =(uin + uout)/2. + ((-uin + uout)*tanh((-r*r + pow(-x2 + x,2) + pow(-q1 + y,2))/0.2) 
+                                            *tanh((-r*r + pow(-x1 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x3 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x4 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x5 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x6 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x7 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x8 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x9 + x,2) + pow(-q1 + y,2))/0.2)
+                                            *tanh((-r*r + pow(-x10 + x,2) + pow(-q1 + y,2))/0.2))/2.;
+      ]]>
+    </initialisation>
+  </vector>
+  
+    <vector name="ativador" initial_basis="x y" type="complex">
+    <components> v </components>
+    <initialisation>
+    <dependencies> noise1 </dependencies>
+      <![CDATA[
+       if((x-x1)*(x-x1)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 + 0.1);
+       else if((x-x2)*(x-x2)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 - 0.1);
+       else if((x-x3)*(x-x3)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 + 0.1);
+       else if((x-x4)*(x-x4)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 - 0.1);
+       else if((x-x5)*(x-x5)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 + 0.1);
+       else if((x-x6)*(x-x6)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 - 0.1);
+       else if((x-x7)*(x-x7)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 + 0.1);
+       else if((x-x8)*(x-x8)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 - 0.1);
+       else if((x-x9)*(x-x9)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 + 0.1);
+       else if((x-x10)*(x-x10)+(y-q1)*(y-q1) < r*r)
+       v = a*(1.00 - 0.1);
+       else
+       v = 0.0; 
+      ]]>
+    </initialisation>
+  </vector>
+  
+  <vector name="inibidor" initial_basis="x y" type="complex">
+    <components> w </components>
+    <initialisation>
+    <dependencies> noise1 </dependencies>
+      <![CDATA[
+       if((x-x1)*(x-x1)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 + 0.1);
+       else if((x-x2)*(x-x2)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 - 0.1);
+       else if((x-x3)*(x-x3)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 + 0.1);
+       else if((x-x4)*(x-x4)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 - 0.1);
+       else if((x-x5)*(x-x5)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 + 0.1);
+       else if((x-x6)*(x-x6)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 - 0.1);
+       else if((x-x7)*(x-x7)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 + 0.1);
+       else if((x-x8)*(x-x8)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 - 0.1);
+       else if((x-x9)*(x-x9)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 + 0.1);
+       else if((x-x10)*(x-x10)+(y-q1)*(y-q1) < r*r)
+       w = (b/a)*(1.00 - 0.1);
+      else
+       w = 0.0;
+      ]]>
+    </initialisation>
+  </vector>
+
+  <vector name="sinal1" initial_basis="x y" type="complex">
+    <components> z1 </components>
+    <initialisation>
+    <dependencies> noise1 </dependencies>
+      <![CDATA[
+       z1 = ((b*c1)/(a*d1)) + 0.0*n1;
+      ]]>
+    </initialisation>
+  </vector>
+ 
+  <vector name="sinal2" initial_basis="x y" type="complex">
+    <components> z2 </components>
+    <initialisation>
+    <dependencies> noise1 </dependencies>
+      <![CDATA[
+       z2 = ((a*c2)/(d2)) + 0.0*n1;
+      ]]>
+    </initialisation>
+  </vector>
+
+  <sequence>
+    <integrate algorithm="ARK45" interval="5000.0" tolerance="1e-5">
+      <samples> 10 5000 5000 5000 5000</samples>
+      <operators>
+        <integration_vectors>fase ativador inibidor sinal1 sinal2</integration_vectors>
+        <operator kind="ex">
+          <operator_names>dx dy dxx dyy dxxxx dyyyy dxxyy</operator_names>
+          <![CDATA[
+            dx = i * kx;
+            dy = i * ky;
+            dxx = - kx * kx;
+            dyy = - ky * ky;
+            dxxxx = kx * kx * kx * kx;
+            dyyyy = ky * ky * ky * ky; 
+            dxxyy = kx * kx * ky * ky; 
+
+          ]]>
+        </operator>
+        <![CDATA[        
+        du_dt = Du*(-(b1*dxx[u]) - k*dxxxx[u] - 2*k*dxxyy[u] - b1*dyy[u] + 3*a1*(-1 + u)*(2*pow(dx[u],2) + (-1 + u)*dxx[u] + 2*pow(dy[u],2) + (-1 + u)*dyy[u]) - k*dyyyy[u]);
+ 
+        if( Re(u) >= 0.7){
+          kk = 1;
+        }
+        else{
+          kk = 0;         
+         }
+ 
+        dv_dt =kk1*(kk)*(a + v*v*w - b*v - v - c2*v + d2*z2) + (DA*(u/2)*kk + DB*(1-(u/2))*(1-kk))*(dxx[v]+dyy[v]);
+        
+        dw_dt =kk1*(kk)*(b*v - v*v*w - c1*w + d1*z1 ) + (DA*(u/2)*kk + DB*(1-(u/2))*(1-kk))*(dxx[w]+dyy[w]);
+        
+        dz1_dt =kk1*(kk)*(c1*w - d1*z1) + (DwA*(u/2) + DwB*(1-(u/2)))*(dxx[z1] + dyy[z1]);
+
+        dz2_dt =kk1*(kk)*(c2*v - d2*z2) + (DwA*(u/2) + DwB*(1-(u/2)))*(dxx[z2] + dyy[z2]);
+              
+        
+        ]]>
+      </operators>
+    </integrate>
+  </sequence>
+
+  <output>
+    <sampling_group basis="x y" initial_sample="yes">
+      <moments>uu</moments>
+      <dependencies>fase</dependencies>
+      <![CDATA[
+        uu = Re(u);
+      ]]>
+    </sampling_group>
+    
+    <sampling_group basis="x y" initial_sample="yes">
+      <moments>vv</moments>
+      <dependencies>ativador</dependencies>
+      <![CDATA[
+        vv = Re(v);
+      ]]>
+    </sampling_group>
+ 
+   <sampling_group basis="x y" initial_sample="yes">
+      <moments>ww</moments>
+      <dependencies>inibidor</dependencies>
+      <![CDATA[
+        ww = Re(w);
+      ]]>
+    </sampling_group>
+    
+    <sampling_group basis="x y" initial_sample="yes">
+      <moments>zz1</moments>
+      <dependencies>sinal1</dependencies>
+      <![CDATA[
+        zz1 = Re(z1);
+      ]]>
+    </sampling_group>
+  
+     <sampling_group basis="x y" initial_sample="yes">
+      <moments>zz2</moments>
+      <dependencies>sinal2</dependencies>
+      <![CDATA[
+        zz2 = Re(z2);
+      ]]>
+    </sampling_group>
+
+ 
+  </output>
+</simulation>
